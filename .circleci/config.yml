@@ -7,7 +7,7 @@ jobs:
     resource_class: large
     working_directory: ~/project
     environment:
-      NODE_OPTIONS: --max_old_space_size=8192
+      NODE_OPTIONS: --max_old_space_size=12288
     steps:
       - checkout
       - run: corepack enable && corepack prepare yarn@1.22.22 --activate
