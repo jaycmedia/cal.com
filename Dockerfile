@@ -3,6 +3,9 @@ WORKDIR /app
 
 RUN corepack enable && corepack prepare yarn@1.22.22 --activate
 
+ARG NEXT_PUBLIC_SITE_URL
+ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
+
 # Copy package manifests
 COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile --production
