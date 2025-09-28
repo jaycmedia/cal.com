@@ -1,0 +1,59 @@
+version: 2.1
+
+jobs:
+  build_web:
+    docker:
+      - image: cimg/node:18.20
+    resource_class: large
+    working_directory: ~/project
+    environment:
+      NODE_OPTIONS: --max_old_space_size=8192
+    steps:
+      - checkout
+      - run: corepack enable && corepack prepare yarn@1.22.22 --activate
+      - restore_cache:
+          keys:
+            - yarn-deps-{{ checksum "yarn.lock" }}
+            - yarn-deps-
+      - run: yarn install --frozen-lockfile
+      - run:
+          name: Build web (web + deps)
+          command: |
+            export NEXTAUTH_SECRET="${NEXTAUTH_SECRET}"
+            yarn turbo run build --filter=web...
+      - save_cache:
+          key: yarn-deps-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
+            - node_modules
+      - persist_to_workspace:
+          root: ~/project
+          paths: [ . ]
+
+  docker_push:
+    docker:
+      - image: cimg/base:stable
+    environment:
+      DOCKER_BUILDKIT: 1
+    steps:
+      - attach_workspace: { at: ~/project }
+      - setup_remote_docker:
+          version: 20.10.14
+      - run:
+          name: Login to Docker Hub
+          command: |
+            echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+      - run:
+          name: Build & push image
+          command: |
+            cd ~/project
+            IMAGE="${DOCKERHUB_USERNAME}/calcom:latest"
+            docker build -f docker/Dockerfile -t "$IMAGE" .
+            docker push "$IMAGE"
+
+workflows:
+  build_and_push:
+    jobs:
+      - build_web
+      - docker_push:
+          requires: [build_web]
