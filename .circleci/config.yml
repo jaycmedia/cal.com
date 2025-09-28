@@ -4,7 +4,7 @@ jobs:
   build_web:
     docker:
       - image: cimg/node:18.20
-    resource_class: large
+    resource_class: xlarge
     working_directory: ~/project
     environment:
       NODE_OPTIONS: --max_old_space_size=8192
@@ -15,14 +15,14 @@ jobs:
           keys:
             - yarn-deps-{{ checksum "yarn.lock" }}
             - yarn-deps-
-      - run: yarn install --frozen-lockfile
+      - run: yarn install --frozen-lockfile --network-concurrency 1
       - run:
           name: Build web (web + deps)
           command: |
             export NEXTAUTH_SECRET="${NEXTAUTH_SECRET}"
             export CALENDSO_ENCRYPTION_KEY="${NEXTAUTH_SECRET}"
             export DISABLE_CONFLICT_CHECKING="true"
-            yarn turbo run build --filter=web...
+            yarn turbo run build --filter=web... --no-cache --concurrency=1
       - save_cache:
           key: yarn-deps-{{ checksum "yarn.lock" }}
           paths:

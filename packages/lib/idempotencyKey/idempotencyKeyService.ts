@@ -6,13 +6,15 @@ export class IdempotencyKeyService {
     endTime,
     userId,
     reassignedById,
-    title,
-    email,
+    title = null,
+    email = null,
   }: {
     startTime: Date | string;
     endTime: Date | string;
     userId?: number;
     reassignedById?: number | null;
+    title?: string | null;
+    email?: string | null;
   }) {
     if (process.env.DISABLE_CONFLICT_CHECKING === "true") {
       return uuidv5(

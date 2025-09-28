@@ -14,8 +14,8 @@ export function bookingIdempotencyKeyExtension() {
               endTime: args.data.endTime,
               userId: args.data.user?.connect?.id,
               reassignedById: args.data.reassignById,
-              email: args.data.responses.email,
-              title: args.data.title,
+              email: (args.data.responses as any)?.email ?? null,
+              title: args.data.title ?? null,
             });
             args.data.idempotencyKey = idempotencyKey;
           }
