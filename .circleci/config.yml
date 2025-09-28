@@ -15,7 +15,7 @@ jobs:
           keys:
             - yarn-deps-{{ checksum "yarn.lock" }}
             - yarn-deps-
-      - run: yarn install --frozen-lockfile --network-concurrency 1
+      - run: yarn install --frozen-lockfile
       - run:
           name: Build web (web + deps)
           command: |
