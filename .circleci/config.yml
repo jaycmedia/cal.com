@@ -4,7 +4,7 @@ jobs:
   build_web:
     docker:
       - image: cimg/node:18.20
-    resource_class: xlarge
+    resource_class: large
     working_directory: ~/project
     environment:
       NODE_OPTIONS: --max_old_space_size=8192
