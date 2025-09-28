@@ -19,8 +19,9 @@ jobs:
       - run:
           name: Build web (web + deps)
           command: |
-            export NEXTAUTH_SECRET="${NEXTAUTH_SECRET}"
-            export CALENDSO_ENCRYPTION_KEY="${NEXTAUTH_SECRET}"
+            export NEXTAUTH_SECRET="dummy"
+            export CALENDSO_ENCRYPTION_KEY="dummy"
+            export NEXTAUTH_URL="dummy"
             export DISABLE_CONFLICT_CHECKING="true"
             yarn turbo run build --filter=web... --no-cache --concurrency=1
       - save_cache:
@@ -30,7 +31,13 @@ jobs:
             - node_modules
       - persist_to_workspace:
           root: ~/project
-          paths: [ . ]
+          paths:
+            - apps/web
+            - packages
+            - .next
+            - node_modules
+            - package.json
+            - yarn.lock
 
   docker_push:
     docker:
@@ -46,17 +53,9 @@ jobs:
           command: |
             echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
       - run:
-          name: Build & push image
+          name: Build & push runtime image
           command: |
             cd ~/project
             IMAGE="${DOCKERHUB_USERNAME}/calcom:latest"
             docker build -f docker/Dockerfile -t "$IMAGE" .
             docker push "$IMAGE"
-
-workflows:
-  build_and_push:
-    jobs:
-      - build_web
-      - docker_push:
-          requires: [build_web]
-
