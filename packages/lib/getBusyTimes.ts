@@ -73,7 +73,9 @@ const _getBusyTimes = async (params: {
       status: BookingStatus.ACCEPTED,
     })}`
   );
-
+  if (process.env.DISABLE_CONFLICT_CHECKING === "true") {
+    return [];
+  }
   /**
    * A user is considered busy within a given time period if there
    * is a booking they own OR attend.
@@ -307,6 +309,10 @@ export async function getBusyTimesForLimitChecks(params: {
   performance.mark("getBusyTimesForLimitChecksStart");
 
   let busyTimes: EventBusyDetails[] = [];
+
+  if (process.env.DISABLE_CONFLICT_CHECKING === "true") {
+    return [];
+  }
 
   if (!bookingLimits && !durationLimits) {
     return busyTimes;

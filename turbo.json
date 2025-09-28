@@ -250,6 +250,7 @@
   },
   "globalDependencies": ["yarn.lock"],
   "globalEnv": [
+    "DISABLE_CONFLICT_CHECKING",
     "ALLOWED_HOSTNAMES",
     "ANALYZE",
     "API_KEY_PREFIX",
