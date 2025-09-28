@@ -58,3 +58,4 @@ workflows:
       - build_web
       - docker_push:
           requires: [build_web]
+
