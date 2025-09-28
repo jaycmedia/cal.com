@@ -21,11 +21,11 @@ jobs:
         run: corepack enable && corepack prepare yarn@1.22.22 --activate
 
       - name: Install deps
-        working-directory: ./package
+        working-directory: ./
         run: yarn install --frozen-lockfile
 
       - name: Build web
-        working-directory: ./package
+        working-directory: ./
         run: yarn build --filter web...
 
       - name: Log in to Docker Hub
@@ -37,7 +37,7 @@ jobs:
       - name: Build & push image
         uses: docker/build-push-action@v5
         with:
-          context: ./package
+          context: ./
           file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/calcom:latest
