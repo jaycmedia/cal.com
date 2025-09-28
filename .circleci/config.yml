@@ -59,3 +59,10 @@ jobs:
             IMAGE="${DOCKERHUB_USERNAME}/calcom:latest"
             docker build -f docker/Dockerfile -t "$IMAGE" .
             docker push "$IMAGE"
+
+workflows:
+  build_and_push:
+    jobs:
+      - build_web
+      - docker_push:
+          requires: [ build_web ]
